@@ -8,6 +8,8 @@ public class Scene {
   private Map<Integer, Person> people;
   private int numberOfMics;
   private int sceneNumber;
+  private List<Person> pooledPeople = new ArrayList<>();
+  private Map<String, Integer> previousNameDistances = new HashMap<>();
 
   public Scene(int numberOfMics, int sceneNumber){
     this.sceneNumber = sceneNumber;
@@ -35,8 +37,74 @@ public class Scene {
 
   }
 
+  public void setPooledPeople(List<Person> pooledPeople) {
+    this.pooledPeople = pooledPeople;
+  }
+
+  public List<Person> getPooledPeople() {
+    return pooledPeople;
+  }
+
+  public int getNumberOfPooledPeople() {
+    return pooledPeople.size();
+  }
+
+  public List<Integer> getGapLocations() {
+    List<Integer> gapLocations = new ArrayList<>();
+    for (int i = 1; i < numberOfMics + 1; i++) {
+      if (!people.containsKey(i)){
+        gapLocations.add(i);
+      }
+    }
+    return gapLocations;
+  }
+
+  public int getNumberOfFreeSpaces() {
+    return numberOfMics - people.size() - getNumberOfPooledPeople();
+  }
+
+  //TODO: Change this to name in previous mic
+  public Map<Integer, String> previousNamesInMic(List<Scene> plot, int sceneNumber) {
+    Map<Integer, String> previousNameInMic = new HashMap<>();
+    for (int i = sceneNumber - 1; i >= 0; i--) {
+      for (int j = 1; j < numberOfMics + 1; j++) {
+        if (!previousNameInMic.containsKey(j)){
+          if (plot.get(i).getPerson(j) != null) {
+            previousNameInMic.put(j, plot.get(i).getPerson(j).getName());
+          }
+        }
+      }
+    }
+    return previousNameInMic;
+  }
+
+  public Map<String, Integer> setPreviousNameDistances(List<List<Person>> peopleInScenes, int sceneNumber) {
+    previousNameDistances = new HashMap<>();
+    for (int i = sceneNumber - 1; i >= 0; i--) {
+      for (Person person: peopleInScenes.get(i)) {
+        if (!previousNameDistances.containsKey(person.getName())) {
+          previousNameDistances.put(person.getName(), sceneNumber - i);
+        }
+      }
+    }
+    return previousNameDistances;
+  }
+
+  public Map<String, Integer> getPreviousNameDistances() {
+    return previousNameDistances;
+  }
+
   @Override
   public String toString() {
-    return "Scene " + sceneNumber + ": " + people.values().stream().map(Person::getName).collect(Collectors.joining(", "));
+    String str = "Scene " + sceneNumber + ": ";
+    List<String> names = new ArrayList<>();
+    for (int i = 1; i < numberOfMics + 1; i++) {
+      if (people.containsKey(i)) {
+        names.add(people.get(i).getName());
+      } else {
+        names.add("_");
+      }
+    }
+    return str + String.join(", ", names);
   }
 }

@@ -1,21 +1,33 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-    int NUMBEROFMICS = 3;
-    Person person1 = new Person("Person 1");
-    Person person2 = new Person("Person 2");
+    int NUMBEROFMICS = 5;
+    Person a = new Person("A");
+    Person b = new Person("B");
+    Person c = new Person("C");
+    Person d = new Person("D");
+    Person e = new Person("E");
+    Person f = new Person("F");
+    Person g = new Person("G");
+    Person h = new Person("H");
     List<List<Person>> peopleInScenes;
 
-    Person[][] people = {{person1}, {person2, person1}};
+    Person[][] people =
+        {
+            {a, b, c},
+            {a, b, d, e},
+            {c, f},
+            {a, d, g, h},
+            {a, b, c}
+        };
     peopleInScenes = convertArrayToList(people);
 
     Solver solver = new Solver(NUMBEROFMICS, peopleInScenes);
     solver.solve();
-    System.out.println(solver.getMicPlot());
+    System.out.println(solver.getMicPlotString());
   }
 
   private static List<List<Person>> convertArrayToList(Person[][] people) {
