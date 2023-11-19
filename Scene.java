@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Scene {
@@ -100,9 +97,9 @@ public class Scene {
   public int getNumberOfChanges(Scene scene) {
     int changes = 0;
     for (int i = 1; i < numberOfMics + 1; i++) {
-      if (scene.getPerson(i) != this.getPerson(i)) {
-        if (scene.getPerson(i) != null){
-          if (this.getPerson(i) != null) {
+      if (scene.getPerson(i) != null){
+        if (this.getPerson(i) != null) {
+          if (!Objects.equals(scene.getPerson(i).getName(), this.getPerson(i).getName())) {
             changes += 1;
           }
         }

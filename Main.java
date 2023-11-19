@@ -1,33 +1,44 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-//    csv();
-    int NUMBEROFMICS = 5;
-    Person a = new Person("A");
-    Person b = new Person("B");
-    Person c = new Person("C");
-    Person d = new Person("D");
-    Person e = new Person("E");
-    Person f = new Person("F");
-    Person g = new Person("G");
-    Person h = new Person("H");
-    List<List<Person>> peopleInScenes;
+//    Csv csv = new Csv();
+//    csv.csvWriter();
+    List<List<String>> peopleInScenesCsv = Csv.csv("csv/sor.csv");
+    List<List<Person>> peopleInScenes = peopleInScenesCsv
+            .stream().map(x -> x.stream().map(Person::new).collect(Collectors.toList())).toList();
+    int NUMBEROFMICS = 18;
+//    List<List<Person>> peopleInScenes2;
+//    Person a = new Person("A");
+//    Person b = new Person("B");
+//    Person c = new Person("C");
+//    Person d = new Person("D");
+//    Person e = new Person("E");
+//    Person f = new Person("F");
+//    Person g = new Person("G");
+//    Person h = new Person("H");
+//
+//
+//    Person[][] people =
+//        {
+//            {a, b, c},
+//            {a, b, d, e},
+//            {c, f},
+//            {a, d, g, h},
+//            {a, b, c}
+//        };
+//    System.out.println(peopleInScenes);
+//    peopleInScenes2 = convertArrayToList(people);
+//    System.out.println(peopleInScenes2);
+//    System.out.println(peopleInScenes == peopleInScenes2);
+//    System.out.println(Objects.equals(peopleInScenes.get(1).get(0).getName(), "A"));
+//    System.out.println(Objects.equals(peopleInScenes.get(0).get(0).getName(), "A"));
+//    String FIRSTELEMENT = "a";
+//    peopleInScenes.get(0).set(0, new Person(FIRSTELEMENT));
 
-    Person[][] people =
-        {
-            {a, b, c},
-            {a, b, d, e},
-            {c, f},
-            {a, d, g, h},
-            {a, b, c}
-        };
-    peopleInScenes = convertArrayToList(people);
 
     Solver solver = new Solver(NUMBEROFMICS, peopleInScenes);
     solver.solve();
@@ -42,17 +53,6 @@ public class Main {
       list.add(currentList);
     }
     return list;
-  }
-
-  private static void csv() throws FileNotFoundException {
-    File getCSVFiles = new File("/csv/example.csv");
-    Scanner sc = new Scanner(getCSVFiles);
-    sc.useDelimiter(",");
-    while (sc.hasNext())
-    {
-      System.out.print(sc.next() + " | ");
-    }
-    sc.close();
   }
 
 
