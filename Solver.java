@@ -42,21 +42,6 @@ public class Solver {
           }
         }
 
-        //Places people into a mic if it has always been empty
-        for (int j = 1; j < numberOfMics + 1; j++){
-          boolean previouslyNull = false;
-          for (int k = 0; k < i; k++) {
-            if (plot.get(k).getPerson((j)) != null){
-              previouslyNull = true;
-            }
-          }
-          if (!previouslyNull && peopleToInsert.size() > 0) {
-            Person p = peopleToInsert.get(0);
-            currentScene.setPerson(p, j);
-            peopleToInsert.remove(p);
-          }
-        }
-
         currentScene.setPreviousNameDistances(peopleInScenes, i);
 
         for (int j = 0; j < currentScene.getNumberOfFreeSpaces(); j++) {
@@ -97,6 +82,21 @@ public class Solver {
           }
         }
 
+        //Places people into a mic if it has always been empty
+        for (int j = 1; j < numberOfMics + 1; j++){
+          boolean previouslyNull = false;
+          for (int k = 0; k < i; k++) {
+            if (plot.get(k).getPerson((j)) != null){
+              previouslyNull = true;
+            }
+          }
+          if (!previouslyNull && peopleToInsert.size() > 0) {
+            Person p = peopleToInsert.get(0);
+            currentScene.setPerson(p, j);
+            peopleToInsert.remove(p);
+          }
+        }
+
         currentScene.setPooledPeople(peopleToInsert);
 
       } else {
@@ -114,6 +114,8 @@ public class Solver {
       }
     }
 
+    System.out.println(plot);
+
     //Second pass
     //Left with just pooled mics and spaces, so just needs to be placed in at the
     //first available space
@@ -129,6 +131,10 @@ public class Solver {
 
   public String getMicPlotString() {
     return plot.stream().map(Object::toString).collect(Collectors.joining(" \n"));
+  }
+
+  public List<String[]> getMicPlotListOfArrays() {
+    return plot.stream().map(x -> x.getNames().toArray(new String[0])).toList();
   }
 
   public int getNumberOfChanges() {

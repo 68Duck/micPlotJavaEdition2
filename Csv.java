@@ -5,20 +5,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Csv {
-
-  public void csvWriter() throws IOException {
-    givenDataArray_whenConvertToCSV_thenOutputCreated();
+  String OUTPUTFILENAME = "csv/test.csv";
+  public void csvWriter(List<String[]> data) throws IOException {
+    givenDataArray_whenConvertToCSV_thenOutputCreated(data);
   }
 
-  public void givenDataArray_whenConvertToCSV_thenOutputCreated() throws IOException {
-    List<String[]> dataLines = new ArrayList<>();
-    dataLines.add(new String[]
-            {"John", "Doe", "38", "Comment Data\nAnother line of comment data"});
-    dataLines.add(new String[]
-            {"Jane", "Doe, Jr.", "19", "She said \"I'm being quoted\""});
-    File csvOutputFile = new File("csv/example.csv");
+  public void givenDataArray_whenConvertToCSV_thenOutputCreated(List<String[]> data) throws IOException {
+    File csvOutputFile = new File(OUTPUTFILENAME);
     try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
-      dataLines.stream()
+      data.stream()
               .map(this::convertToCSV)
               .forEach(pw::println);
     }

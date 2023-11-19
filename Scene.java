@@ -108,6 +108,18 @@ public class Scene {
     return changes;
   }
 
+  public List<String> getNames() {
+    List<String> names = new ArrayList<>();
+    for (int i = 1; i < numberOfMics + 1; i++) {
+      if (people.containsKey(i)) {
+        names.add(people.get(i).getName());
+      } else {
+        names.add("_");
+      }
+    }
+    return names;
+  }
+
   @Override
   public String toString() {
     String str = "Scene " + sceneNumber + ": ";
