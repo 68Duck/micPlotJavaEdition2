@@ -71,7 +71,6 @@ public class Solver {
           List<Person> peopleToInsertInPreviousMic = previousNamesInMic.values().stream().filter(peopleToInsert::contains).toList();
           Person maxDistancePerson = null;
           int maxDistance = 0;
-          int maxDistancePersonIndex = 0;
           for (Person p: peopleToInsertInPreviousMic) {
             int distance = currentScene.getPreviousNameDistances().get(p);
             boolean space = true;
@@ -88,35 +87,21 @@ public class Solver {
             }
           }
           if (maxDistancePerson != null && maxDistance > 1) {
-              currentScene.setPerson(maxDistancePerson, maxDistancePersonIndex);
-              peopleToInsert.remove(maxDistancePerson);
+            Person finalMaxDistancePerson = maxDistancePerson;
+            int index = previousNamesInMic.entrySet().stream()
+                  .filter(entry -> finalMaxDistancePerson.equals(entry.getValue()))
+                  .findFirst().map(Map.Entry::getKey)
+                  .orElse(null);
+            for (int k = 0; k < maxDistance; k++) {
+              Scene scene = plot.get(sceneCounter - k);
+              scene.setPerson(maxDistancePerson, index);
+              scene.removePooledPerson(maxDistancePerson);
+            }
+            peopleToInsert.remove(maxDistancePerson);
           }
-
-//          Map<Integer, Person> previousNamesInMic = currentScene.previousNamesInMic(plot, sceneCounter);
-//          currentScene.setPreviousNameDistances(peopleInScenes, sceneCounter);
-//          System.out.println(currentScene);
-//          System.out.println(previousNamesInMic);
-//          System.out.println(currentScene.getPreviousNameDistances());
-//          int maxDistance = previousNamesInMic.values().stream().filter(peopleToInsert::contains).map(x -> (currentScene.getIndex(x) == 0) ? currentScene.getPreviousNameDistances().get(x) : 0).reduce(Math::max).orElse(0);
-//          System.out.println(maxDistance);
-//          if (maxDistance > 1) { //So not already in that scene
-//              Person p = previousNamesInMic.values().stream().filter(peopleToInsert::contains).filter(x -> currentScene.getPreviousNameDistances().get(x) == maxDistance).toList().get(0);
-//            //P is the first person in the list so the person to be input
-//              System.out.println("Inserting:");
-//              System.out.println(p.getName());
-//              currentScene.setPerson(p, previousNamesInMic.entrySet().stream()
-//                  .filter(entry -> p.equals(entry.getValue()))
-//                  .findFirst().map(Map.Entry::getKey)
-//                  .orElse(null));
-//              peopleToInsert.remove(p);
-//          }
         }
 
         currentScene.setPooledPeople(peopleToInsert);
-
-
-
-        //TODO: If no mics are pooled, then ???
 
       } else {
         int peopleInsertedCounter = 0;
