@@ -9,7 +9,7 @@ public class Scene {
   private int numberOfMics;
   private int sceneNumber;
   private List<Person> pooledPeople = new ArrayList<>();
-  private Map<String, Integer> previousNameDistances = new HashMap<>();
+  private Map<Person, Integer> previousNameDistances = new HashMap<>();
 
   public Scene(int numberOfMics, int sceneNumber){
     this.sceneNumber = sceneNumber;
@@ -64,13 +64,13 @@ public class Scene {
   }
 
   //TODO: Change this to name in previous mic
-  public Map<Integer, String> previousNamesInMic(List<Scene> plot, int sceneNumber) {
-    Map<Integer, String> previousNameInMic = new HashMap<>();
+  public Map<Integer, Person> previousNamesInMic(List<Scene> plot, int sceneNumber) {
+    Map<Integer, Person> previousNameInMic = new HashMap<>();
     for (int i = sceneNumber - 1; i >= 0; i--) {
       for (int j = 1; j < numberOfMics + 1; j++) {
         if (!previousNameInMic.containsKey(j)){
           if (plot.get(i).getPerson(j) != null) {
-            previousNameInMic.put(j, plot.get(i).getPerson(j).getName());
+            previousNameInMic.put(j, plot.get(i).getPerson(j));
           }
         }
       }
@@ -78,19 +78,19 @@ public class Scene {
     return previousNameInMic;
   }
 
-  public Map<String, Integer> setPreviousNameDistances(List<List<Person>> peopleInScenes, int sceneNumber) {
+  public Map<Person, Integer> setPreviousNameDistances(List<List<Person>> peopleInScenes, int sceneNumber) {
     previousNameDistances = new HashMap<>();
     for (int i = sceneNumber - 1; i >= 0; i--) {
       for (Person person: peopleInScenes.get(i)) {
-        if (!previousNameDistances.containsKey(person.getName())) {
-          previousNameDistances.put(person.getName(), sceneNumber - i);
+        if (!previousNameDistances.containsKey(person)) {
+          previousNameDistances.put(person, sceneNumber - i);
         }
       }
     }
     return previousNameDistances;
   }
 
-  public Map<String, Integer> getPreviousNameDistances() {
+  public Map<Person, Integer> getPreviousNameDistances() {
     return previousNameDistances;
   }
 

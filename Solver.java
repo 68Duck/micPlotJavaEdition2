@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.min;
 
 public class Solver {
   private int numberOfMics;
@@ -62,12 +66,30 @@ public class Solver {
         }
 
         currentScene.setPreviousNameDistances(peopleInScenes, sceneCounter);
-        System.out.println(currentScene.getPreviousNameDistances());
+//        System.out.println(currentScene.getPreviousNameDistances());
+//        System.out.println(currentScene.getPreviousNameDistances());
 
-        System.out.println(currentScene.previousNamesInMic(plot, sceneCounter));
+//        System.out.println(currentScene.previousNamesInMic(plot, sceneCounter));
 
         for (int j = 0; j < currentScene.getNumberOfFreeSpaces(); j++) {
-          List<Integer> gaps = currentScene.getGapLocations();
+          //TODO: find maximum in get previous distances list, that is also in previous Names in mic,
+          //TODO: and is not in that scene already.
+          Map<Integer, Person> previousNamesInMic = currentScene.previousNamesInMic(plot, sceneCounter);
+          currentScene.setPreviousNameDistances(peopleInScenes, sceneCounter);
+          System.out.println(previousNamesInMic);
+          System.out.println(currentScene.getPreviousNameDistances());
+          int maxDistance = previousNamesInMic.values().stream().map(x -> currentScene.getPreviousNameDistances().get(x)).reduce(Math::max).orElse(0);
+          System.out.println(maxDistance);
+          if (maxDistance > 1) { //So not already in that scene
+              Person p = previousNamesInMic.values().stream().filter(x -> currentScene.getPreviousNameDistances().get(x) == maxDistance).toList().get(0);
+            //P is the first person in the list so the person to be input
+              System.out.println("Inserting:");
+              System.out.println(p.getName());
+              currentScene.setPerson(p, previousNamesInMic.entrySet().stream()
+                  .filter(entry -> p.equals(entry.getValue()))
+                  .findFirst().map(Map.Entry::getKey)
+                  .orElse(null));
+          }
         }
 
         currentScene.setPooledPeople(peopleToInsert);
