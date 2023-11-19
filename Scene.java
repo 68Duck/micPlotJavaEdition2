@@ -41,6 +41,10 @@ public class Scene {
     this.pooledPeople = pooledPeople;
   }
 
+  public void removePooledPerson(Person p) {
+    this.pooledPeople.remove(p);
+  }
+
   public List<Person> getPooledPeople() {
     return pooledPeople;
   }
@@ -63,7 +67,6 @@ public class Scene {
     return numberOfMics - people.size() - getNumberOfPooledPeople();
   }
 
-  //TODO: Change this to name in previous mic
   public Map<Integer, Person> previousNamesInMic(List<Scene> plot, int sceneNumber) {
     Map<Integer, Person> previousNameInMic = new HashMap<>();
     for (int i = sceneNumber - 1; i >= 0; i--) {

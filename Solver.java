@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class Solver {
@@ -17,15 +18,6 @@ public class Solver {
     this.numberOfScenes = peopleInScenes.size();
   }
   public void solve() throws Exception {
-//    plot = new ArrayList<>();
-//    Scene scene = new Scene(numberOfMics, 1);
-//    scene.addPerson(new Person("Person 1", 1), 1);
-//    scene.addPerson(new Person("Person 2", 2), 2);
-//    plot.add(scene);
-//    Scene scene2 = new Scene(numberOfMics, 2);
-//    scene2.addPerson(new Person("Person 3", 1), 1);
-//    scene2.addPerson(new Person("Person 4", 2), 2);
-//    plot.add(scene2);
 
     plot = new ArrayList<>();
     for (int i = 0; i < numberOfScenes; i++) {
@@ -76,20 +68,48 @@ public class Solver {
           //TODO: and is not in that scene already.
           Map<Integer, Person> previousNamesInMic = currentScene.previousNamesInMic(plot, sceneCounter);
           currentScene.setPreviousNameDistances(peopleInScenes, sceneCounter);
-          System.out.println(previousNamesInMic);
-          System.out.println(currentScene.getPreviousNameDistances());
-          int maxDistance = previousNamesInMic.values().stream().map(x -> currentScene.getPreviousNameDistances().get(x)).reduce(Math::max).orElse(0);
-          System.out.println(maxDistance);
-          if (maxDistance > 1) { //So not already in that scene
-              Person p = previousNamesInMic.values().stream().filter(x -> currentScene.getPreviousNameDistances().get(x) == maxDistance).toList().get(0);
-            //P is the first person in the list so the person to be input
-              System.out.println("Inserting:");
-              System.out.println(p.getName());
-              currentScene.setPerson(p, previousNamesInMic.entrySet().stream()
-                  .filter(entry -> p.equals(entry.getValue()))
-                  .findFirst().map(Map.Entry::getKey)
-                  .orElse(null));
+          List<Person> peopleToInsertInPreviousMic = previousNamesInMic.values().stream().filter(peopleToInsert::contains).toList();
+          Person maxDistancePerson = null;
+          int maxDistance = 0;
+          int maxDistancePersonIndex = 0;
+          for (Person p: peopleToInsertInPreviousMic) {
+            int distance = currentScene.getPreviousNameDistances().get(p);
+            boolean space = true;
+            for (int k = 1; k < distance; k++) {
+              if (plot.get(sceneCounter - k).getNumberOfFreeSpaces() <= 0) {
+                space = false;
+              }
+            }
+            if (space) {
+              if (distance > maxDistance) {
+                maxDistancePerson = p;
+                maxDistance = distance;
+              }
+            }
           }
+          if (maxDistancePerson != null && maxDistance > 1) {
+              currentScene.setPerson(maxDistancePerson, maxDistancePersonIndex);
+              peopleToInsert.remove(maxDistancePerson);
+          }
+
+//          Map<Integer, Person> previousNamesInMic = currentScene.previousNamesInMic(plot, sceneCounter);
+//          currentScene.setPreviousNameDistances(peopleInScenes, sceneCounter);
+//          System.out.println(currentScene);
+//          System.out.println(previousNamesInMic);
+//          System.out.println(currentScene.getPreviousNameDistances());
+//          int maxDistance = previousNamesInMic.values().stream().filter(peopleToInsert::contains).map(x -> (currentScene.getIndex(x) == 0) ? currentScene.getPreviousNameDistances().get(x) : 0).reduce(Math::max).orElse(0);
+//          System.out.println(maxDistance);
+//          if (maxDistance > 1) { //So not already in that scene
+//              Person p = previousNamesInMic.values().stream().filter(peopleToInsert::contains).filter(x -> currentScene.getPreviousNameDistances().get(x) == maxDistance).toList().get(0);
+//            //P is the first person in the list so the person to be input
+//              System.out.println("Inserting:");
+//              System.out.println(p.getName());
+//              currentScene.setPerson(p, previousNamesInMic.entrySet().stream()
+//                  .filter(entry -> p.equals(entry.getValue()))
+//                  .findFirst().map(Map.Entry::getKey)
+//                  .orElse(null));
+//              peopleToInsert.remove(p);
+//          }
         }
 
         currentScene.setPooledPeople(peopleToInsert);
