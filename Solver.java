@@ -25,17 +25,17 @@ public class Solver {
       plot.add(scene);
     }
 
-    int sceneCounter = 0;
+    //First pass
     for (int i = 0; i < numberOfScenes; i++){
-      Scene currentScene = plot.get(sceneCounter);
+      Scene currentScene = plot.get(i);
       //TODO: Sort by priority
-      List<Person> peopleToInsert = new ArrayList<>(peopleInScenes.get(sceneCounter));
+      List<Person> peopleToInsert = new ArrayList<>(peopleInScenes.get(i));
 
-      if (sceneCounter > 0) {
-        Scene previous = plot.get(sceneCounter - 1);
+      if (i > 0) {
+        Scene previous = plot.get(i - 1);
 
         //Places every person who is in the previous scene into the current scene
-        for (Person person: peopleInScenes.get(sceneCounter)) {
+        for (Person person: peopleInScenes.get(i)) {
           if (previous.getIndex(person) != 0) {
             currentScene.setPerson(person, previous.getIndex(person));
             peopleToInsert.remove(person);
@@ -45,7 +45,7 @@ public class Solver {
         //Places people into a mic if it has always been empty
         for (int j = 1; j < numberOfMics + 1; j++){
           boolean previouslyNull = false;
-          for (int k = 0; k < sceneCounter; k++) {
+          for (int k = 0; k < i; k++) {
             if (plot.get(k).getPerson((j)) != null){
               previouslyNull = true;
             }
@@ -57,17 +57,13 @@ public class Solver {
           }
         }
 
-        currentScene.setPreviousNameDistances(peopleInScenes, sceneCounter);
-//        System.out.println(currentScene.getPreviousNameDistances());
-//        System.out.println(currentScene.getPreviousNameDistances());
-
-//        System.out.println(currentScene.previousNamesInMic(plot, sceneCounter));
+        currentScene.setPreviousNameDistances(peopleInScenes, i);
 
         for (int j = 0; j < currentScene.getNumberOfFreeSpaces(); j++) {
           //TODO: find maximum in get previous distances list, that is also in previous Names in mic,
           //TODO: and is not in that scene already.
-          Map<Integer, Person> previousNamesInMic = currentScene.previousNamesInMic(plot, sceneCounter);
-          currentScene.setPreviousNameDistances(peopleInScenes, sceneCounter);
+          Map<Integer, Person> previousNamesInMic = currentScene.previousNamesInMic(plot, i);
+          currentScene.setPreviousNameDistances(peopleInScenes, i);
           List<Person> peopleToInsertInPreviousMic = previousNamesInMic.values().stream().filter(peopleToInsert::contains).toList();
           Person maxDistancePerson = null;
           int maxDistance = 0;
@@ -75,7 +71,7 @@ public class Solver {
             int distance = currentScene.getPreviousNameDistances().get(p);
             boolean space = true;
             for (int k = 1; k < distance; k++) {
-              if (plot.get(sceneCounter - k).getNumberOfFreeSpaces() <= 0) {
+              if (plot.get(i - k).getNumberOfFreeSpaces() <= 0) {
                 space = false;
               }
             }
@@ -93,7 +89,7 @@ public class Solver {
                   .findFirst().map(Map.Entry::getKey)
                   .orElse(null);
             for (int k = 0; k < maxDistance; k++) {
-              Scene scene = plot.get(sceneCounter - k);
+              Scene scene = plot.get(i - k);
               scene.setPerson(maxDistancePerson, index);
               scene.removePooledPerson(maxDistancePerson);
             }
@@ -116,9 +112,19 @@ public class Solver {
         }
         peopleToInsert.subList(0, peopleInsertedCounter).clear();
       }
-      sceneCounter += 1;
     }
 
+    //Second pass
+    //Left with just pooled mics and spaces, so just needs to be placed in at the
+    //first available space
+    for (int i = 0; i < numberOfScenes; i++){
+      Scene currentScene = plot.get(i);
+      List<Person> pooledPeople = currentScene.getPooledPeople();
+      for (Person p: pooledPeople) {
+        List<Integer> gaps = currentScene.getGapLocations();
+        currentScene.setPerson(p, gaps.get(0));
+      }
+    }
   }
 
   public String getMicPlotString() {
