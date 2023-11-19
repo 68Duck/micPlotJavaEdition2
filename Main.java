@@ -1,9 +1,13 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
   public static void main(String[] args) throws Exception {
+//    csv();
     int NUMBEROFMICS = 5;
     Person a = new Person("A");
     Person b = new Person("B");
@@ -27,6 +31,7 @@ public class Main {
 
     Solver solver = new Solver(NUMBEROFMICS, peopleInScenes);
     solver.solve();
+    System.out.println(solver.getNumberOfChanges());
     System.out.println(solver.getMicPlotString());
   }
 
@@ -37,6 +42,17 @@ public class Main {
       list.add(currentList);
     }
     return list;
+  }
+
+  private static void csv() throws FileNotFoundException {
+    File getCSVFiles = new File("/csv/example.csv");
+    Scanner sc = new Scanner(getCSVFiles);
+    sc.useDelimiter(",");
+    while (sc.hasNext())
+    {
+      System.out.print(sc.next() + " | ");
+    }
+    sc.close();
   }
 
 

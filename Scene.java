@@ -97,6 +97,20 @@ public class Scene {
     return previousNameDistances;
   }
 
+  public int getNumberOfChanges(Scene scene) {
+    int changes = 0;
+    for (int i = 1; i < numberOfMics + 1; i++) {
+      if (scene.getPerson(i) != this.getPerson(i)) {
+        if (scene.getPerson(i) != null){
+          if (this.getPerson(i) != null) {
+            changes += 1;
+          }
+        }
+      }
+    }
+    return changes;
+  }
+
   @Override
   public String toString() {
     String str = "Scene " + sceneNumber + ": ";

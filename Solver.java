@@ -130,4 +130,12 @@ public class Solver {
   public String getMicPlotString() {
     return plot.stream().map(Object::toString).collect(Collectors.joining(" \n"));
   }
+
+  public int getNumberOfChanges() {
+    int changes = 0;
+    for (int i = 0; i < numberOfScenes - 1; i++) {
+      changes += plot.get(i).getNumberOfChanges(plot.get(i+1));
+    }
+    return changes;
+  }
 }
