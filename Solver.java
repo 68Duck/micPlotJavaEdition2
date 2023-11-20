@@ -14,7 +14,7 @@ public class Solver {
     this.peopleInScenes = peopleInScenes;
     this.numberOfScenes = peopleInScenes.size();
   }
-  public void solve() throws Exception {
+  public void solve(boolean minCalc) throws Exception {
 
     plot = new ArrayList<>();
     for (int i = 0; i < numberOfScenes; i++) {
@@ -51,37 +51,74 @@ public class Solver {
             Map<Integer, Person> previousNamesInMic = currentScene.previousNamesInMic(plot, i);
             currentScene.setPreviousNameDistances(peopleInScenes, i);
             List<Person> peopleToInsertInPreviousMic = previousNamesInMic.values().stream().filter(peopleToInsert::contains).toList();
-            Person maxDistancePerson = null;
-            int maxDistance = 0;
-            for (Person p : peopleToInsertInPreviousMic) {
-              int distance = currentScene.getPreviousNameDistances().get(p);
-              boolean space = true;
-              for (int k = 1; k < distance; k++) {
-                if (plot.get(i - k).getNumberOfFreeSpaces() <= 0) {
-                  space = false;
+
+
+            if (minCalc) {
+              Person minDistancePerson = null;
+              int MAXVALUE = 1000000;
+              int minDistance = MAXVALUE;
+              for (Person p : peopleToInsertInPreviousMic) {
+                int distance = currentScene.getPreviousNameDistances().get(p);
+                boolean space = true;
+                for (int k = 1; k < distance; k++) {
+                  if (plot.get(i - k).getNumberOfFreeSpaces() <= 0) {
+                    space = false;
+                  }
+                }
+                if (space) {
+                  if (distance > 1 && distance < minDistance) {
+                    minDistancePerson = p;
+                    minDistance = distance;
+                  }
                 }
               }
-              if (space) {
-                if (distance > maxDistance) {
-                  maxDistancePerson = p;
-                  maxDistance = distance;
+              if (minDistancePerson != null && minDistance != MAXVALUE) {
+                Person finalMaxDistancePerson = minDistancePerson;
+                int index = previousNamesInMic.entrySet().stream()
+                        .filter(entry -> finalMaxDistancePerson.equals(entry.getValue()))
+                        .findFirst().map(Map.Entry::getKey)
+                        .orElse(null);
+                for (int k = 0; k < minDistance; k++) {
+                  Scene scene = plot.get(i - k);
+                  scene.setPerson(minDistancePerson, index);
+                  scene.removePooledPerson(minDistancePerson);
+                }
+                peopleToInsert.remove(minDistancePerson);
+              }
+            } else {
+              Person maxDistancePerson = null;
+              int maxDistance = 0;
+              for (Person p : peopleToInsertInPreviousMic) {
+                int distance = currentScene.getPreviousNameDistances().get(p);
+                boolean space = true;
+                for (int k = 1; k < distance; k++) {
+                  if (plot.get(i - k).getNumberOfFreeSpaces() <= 0) {
+                    space = false;
+                  }
+                }
+                if (space) {
+                  if (distance > maxDistance) {
+                    maxDistancePerson = p;
+                    maxDistance = distance;
+                  }
                 }
               }
-            }
-            if (maxDistancePerson != null && maxDistance > 1) {
-              Person finalMaxDistancePerson = maxDistancePerson;
-              int index = previousNamesInMic.entrySet().stream()
-                      .filter(entry -> finalMaxDistancePerson.equals(entry.getValue()))
-                      .findFirst().map(Map.Entry::getKey)
-                      .orElse(null);
-              for (int k = 0; k < maxDistance; k++) {
-                Scene scene = plot.get(i - k);
-                scene.setPerson(maxDistancePerson, index);
-                scene.removePooledPerson(maxDistancePerson);
+              if (maxDistancePerson != null && maxDistance > 1) {
+                Person finalMaxDistancePerson = maxDistancePerson;
+                int index = previousNamesInMic.entrySet().stream()
+                        .filter(entry -> finalMaxDistancePerson.equals(entry.getValue()))
+                        .findFirst().map(Map.Entry::getKey)
+                        .orElse(null);
+                for (int k = 0; k < maxDistance; k++) {
+                  Scene scene = plot.get(i - k);
+                  scene.setPerson(maxDistancePerson, index);
+                  scene.removePooledPerson(maxDistancePerson);
+                }
+                peopleToInsert.remove(maxDistancePerson);
               }
-              peopleToInsert.remove(maxDistancePerson);
             }
           }
+
 
           //Places people into a mic if it has always been empty
           for (int j = 1; j < numberOfMics + 1; j++) {

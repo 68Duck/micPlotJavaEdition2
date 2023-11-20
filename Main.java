@@ -31,15 +31,34 @@ public class Main {
     System.out.println(listOfALlPeople);
     System.out.println(listOfALlPeople.size());
 
-    for (int i = minMicsRequired; i < minMicsRequired +20; i++) {
+    Map<Integer, Integer> mins = new HashMap<>();
+    Map<Integer, Integer> maxs = new HashMap<>();
+    int CALCULATEDMICS = 20;
+
+    for (int i = minMicsRequired; i < minMicsRequired +CALCULATEDMICS; i++) {
       Solver solver = new Solver(i, peopleInScenes);
-      solver.solve();
-      System.out.println(i + "=" + solver.getNumberOfChanges());
-      Csv csv = new Csv();
-      csv.csvWriter(solver.getTransposedMicPLot(), "csv/" + i + "mics.csv");
+      solver.solve(true);
+      mins.put(i, solver.getNumberOfChanges());
+//      System.out.println("min" + i + "=" + solver.getNumberOfChanges());
+//      Csv csv = new Csv();
+//      csv.csvWriter(solver.getTransposedMicPLot(), "csv/" + i + "mics.csv");
     }
+    for (int i = minMicsRequired; i < minMicsRequired +CALCULATEDMICS; i++) {
+      Solver solver = new Solver(i, peopleInScenes);
+      solver.solve(false);
+      maxs.put(i, solver.getNumberOfChanges());
+//      System.out.println("max" + i + "=" + solver.getNumberOfChanges());
+//      Csv csv = new Csv();
+//      csv.csvWriter(solver.getTransposedMicPLot(), "csv/" + i + "mics.csv");
+    }
+
+    for (int i = minMicsRequired; i < minMicsRequired + CALCULATEDMICS; i++) {
+      System.out.println("mic " + i + " min:" + mins.get(i) + " max:" + maxs.get(i));
+    }
+
+
     Solver solver = new Solver(NUMBEROFMICS, peopleInScenes);
-    solver.solve();
+    solver.solve(true);
     Csv csv = new Csv();
     csv.csvWriter(solver.getTransposedMicPLot(), "csv/test.csv");
   }
