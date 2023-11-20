@@ -5,13 +5,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Csv {
-  String OUTPUTFILENAME = "csv/test.csv";
-  public void csvWriter(List<String[]> data) throws IOException {
-    givenDataArray_whenConvertToCSV_thenOutputCreated(data);
+//  String OUTPUTFILENAME = "csv/test.csv";
+  public void csvWriter(List<String[]> data, String outputFileName) throws IOException {
+    givenDataArray_whenConvertToCSV_thenOutputCreated(data, outputFileName);
   }
 
-  public void givenDataArray_whenConvertToCSV_thenOutputCreated(List<String[]> data) throws IOException {
-    File csvOutputFile = new File(OUTPUTFILENAME);
+  public void givenDataArray_whenConvertToCSV_thenOutputCreated(List<String[]> data, String outputFileName) throws IOException {
+    File csvOutputFile = new File(outputFileName);
     try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
       data.stream()
               .map(this::convertToCSV)

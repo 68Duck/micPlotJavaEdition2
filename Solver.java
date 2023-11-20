@@ -139,6 +139,19 @@ public class Solver {
     return plot.stream().map(x -> x.getNames().toArray(new String[0])).toList();
   }
 
+  public List<String[]> getTransposedMicPLot() {
+    List<String[]> transposedPlot = new ArrayList<>();
+    for (int i = 0; i < numberOfMics; i++){
+      transposedPlot.add(new String[plot.size()]);
+    }
+    for (int i = 0; i < plot.size(); i++) {
+      for (int j = 0; j < numberOfMics; j++) {
+        transposedPlot.get(j)[i] = getMicPlotListOfArrays().get(i)[j];
+      }
+    }
+    return transposedPlot;
+  }
+
   public int getNumberOfChanges() {
 //    int changes = 0;
 //    for (int i = 0; i < numberOfScenes - 1; i++) {
