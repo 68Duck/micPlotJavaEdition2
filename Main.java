@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-    List<List<String>> peopleInScenesCsv = Csv.csv("csv/test2.csv");
+    List<List<String>> peopleInScenesCsv = Csv.csv("csv/sor2.csv");
     List<List<Person>> peopleInScenes = peopleInScenesCsv
             .stream().map(x -> x.stream().map(Person::new).collect(Collectors.toList())).toList();
     int NUMBEROFMICS = 18;

@@ -1,16 +1,13 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class Solver {
-  private int numberOfMics;
+  private final int numberOfMics;
   private List<Scene> plot;
-  private List<List<Person>> peopleInScenes;
+  private final List<List<Person>> peopleInScenes;
   int numberOfScenes;
   public Solver(int numberOfMics, List<List<Person>> peopleInScenes) {
     this.numberOfMics = numberOfMics;
@@ -143,9 +140,23 @@ public class Solver {
   }
 
   public int getNumberOfChanges() {
+//    int changes = 0;
+//    for (int i = 0; i < numberOfScenes - 1; i++) {
+//      changes += plot.get(i).getNumberOfChanges(plot.get(i+1));
+//    }
+//    return changes;
     int changes = 0;
-    for (int i = 0; i < numberOfScenes - 1; i++) {
-      changes += plot.get(i).getNumberOfChanges(plot.get(i+1));
+    for (int i = 0; i < this.numberOfMics; i++) {
+      Person previous = null;
+      for (Scene scene: plot) {
+        Person p = scene.getPerson(i);
+        if (!Objects.isNull(previous) && !Objects.isNull(p)) {
+          changes += Objects.equals(previous.getName(), p.getName()) ? 0 : 1;
+        }
+        if (!Objects.isNull(p)) {
+          previous = p;
+        }
+      }
     }
     return changes;
   }
